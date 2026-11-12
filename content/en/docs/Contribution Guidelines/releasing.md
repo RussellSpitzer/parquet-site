@@ -75,16 +75,16 @@ and `PARQUET_SVN_DEV_USERNAME` and `PARQUET_SVN_DEV_PASSWORD` write to
 #### 0\. Before you start the release process
 
 1. Verify that the release is finished (no planned Issues/PRs are pending [on the milestone](https://github.com/apache/parquet-java/milestones)).
-1. For a patch release, backport the fixes to the `parquet-X.Y.x` branch.
-1. Make sure CI passes on the commit you will release. The workflow stops if it does not.
+2. For a patch release, backport the fixes to the `parquet-X.Y.x` branch.
+3. Make sure CI passes on the commit you will release. The workflow stops if it does not.
 
 #### 1\. Run "Release - Prepare RC"
 
-Inputs:
-
-- **version**: the release version, for example `1.18.0`.
-- **rc_number**: leave empty to use the next free RC number.
-- **dry_run**: select it for the first run.
+| Input | Required | Default | Description |
+| --- | --- | --- | --- |
+| `version` | Yes | | The release version, for example `1.18.0`. |
+| `rc_number` | No | Next free RC number | The RC number. Set it only to override the next free number; the workflow stops if the RC tag already exists. |
+| `dry_run` | No | Selected | Print each command without running it. |
 
 For a new minor release, the workflow creates the `parquet-X.Y.x` release
 branch from `master`. For a patch release, it uses the existing
@@ -93,16 +93,16 @@ branch from `master`. For a patch release, it uses the existing
 The workflow:
 
 1. Creates the `parquet-X.Y.x` branch, if it does not exist, and checks it out.
-1. Finds the next RC number.
-1. Verifies that CI passes on the release commit.
-1. Sets the POM version to the release version and commits it.
-1. Creates the RC tag, for example `apache-parquet-1.18.0-rc0`.
-1. Deploys the artifacts to a Nexus staging repository, then closes and verifies it.
-1. Builds and signs the source tarball, and writes its SHA-512 checksum.
-1. Stages the tarball, signature, and checksum in
+2. Finds the next RC number.
+3. Verifies that CI passes on the release commit.
+4. Sets the POM version to the release version and commits it.
+5. Creates the RC tag, for example `apache-parquet-1.18.0-rc0`.
+6. Deploys the artifacts to a Nexus staging repository, then closes and verifies it.
+7. Builds and signs the source tarball, and writes its SHA-512 checksum.
+8. Stages the tarball, signature, and checksum in
    [dist/dev/parquet](https://dist.apache.org/repos/dist/dev/parquet/).
-1. Pushes the RC tag and creates a GitHub pre-release with generated release notes.
-1. Writes the VOTE e-mail in the run summary.
+9. Pushes the RC tag and creates a GitHub pre-release with generated release notes.
+10. Writes the VOTE e-mail in the run summary.
 
 Write down the **Nexus staging repository ID** from the summary, for example
 `orgapacheparquet-1234`.
@@ -124,8 +124,17 @@ your release.
 
 Run **Release - Cancel RC** with these inputs:
 
-- **version** and **rc_number**: the release candidate that failed.
-- **staging_repo_id**: the Nexus staging repository ID from the Prepare RC summary.
+| Input | Required | Default | Description |
+| --- | --- | --- | --- |
+| `version` | Yes | | The release version, for example `1.18.0`. |
+| `rc_number` | Yes | | The RC number that failed the vote, for example `0`. |
+| `staging_repo_id` | Yes | | The Nexus staging repository ID from the Prepare RC summary, for example `orgapacheparquet-1234`. |
+| `allow_description_mismatch` | No | Cleared | Skip the check that the staging repository description is `Apache Parquet <VERSION> RC<NUM>`. Use it only for recovery, when the description was changed by hand. |
+| `dry_run` | No | Selected | Print each command without running it. |
+
+Before it drops the staging repository, the workflow verifies that the
+repository belongs to `org.apache.parquet`, is closed, contains the release
+version, and has the expected description.
 
 The workflow drops the Nexus staging repository, removes the RC from
 `dist/dev/parquet`, and writes the vote result e-mail in the run summary. Fill
@@ -144,14 +153,13 @@ dev list with the vote counts.
 
 #### 2\. Run "Release - Publish After Vote"
 
-Inputs:
-
-- **version**: the release version, for example `1.18.0`.
-- **rc_number**: the RC that passed the vote. Leave empty to use the latest RC.
-- **staging_repo_id**: the Nexus staging repository ID from the Prepare RC summary.
-- **allow_description_mismatch**: leave it cleared. It is only for recovery
-  when the staging repository description does not match the RC.
-- **dry_run**: select it for the first run.
+| Input | Required | Default | Description |
+| --- | --- | --- | --- |
+| `version` | Yes | | The release version, for example `1.18.0`. |
+| `rc_number` | No | Latest RC | The RC number that passed the vote. It must be the latest RC for the version. |
+| `staging_repo_id` | Yes | | The Nexus staging repository ID from the Prepare RC summary, for example `orgapacheparquet-1234`. |
+| `allow_description_mismatch` | No | Cleared | Skip the check that the staging repository description is `Apache Parquet <VERSION> RC<NUM>`. Use it only for recovery, when the description was changed by hand. |
+| `dry_run` | No | Selected | Print each command without running it. |
 
 Before it changes anything, the workflow verifies that the staging repository
 belongs to `org.apache.parquet`, is closed, contains the release version, and
@@ -160,11 +168,11 @@ has the description `Apache Parquet <VERSION> RC<NUM>`. It also checks out the
 workflow then:
 
 1. Creates the final release tag, for example `apache-parquet-1.18.0`, on the RC commit.
-1. Releases the Nexus staging repository to Maven Central.
-1. Pushes the release tag and creates the GitHub release.
-1. Sets the next development version, for example `1.18.1-SNAPSHOT`, on the
+2. Releases the Nexus staging repository to Maven Central.
+3. Pushes the release tag and creates the GitHub release.
+4. Sets the next development version, for example `1.18.1-SNAPSHOT`, on the
    release branch and pushes it.
-1. Writes the remaining manual steps and the ANNOUNCE e-mail in the run summary.
+5. Writes the remaining manual steps and the ANNOUNCE e-mail in the run summary.
 
 #### 3\. Move the release on dist.apache.org (PMC member)
 

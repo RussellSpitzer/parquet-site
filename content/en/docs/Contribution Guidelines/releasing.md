@@ -67,8 +67,48 @@ The workflows use credentials stored as repository secrets:
 `PARQUET_GPG_PRIVATE_KEY` signs the release, `NEXUS_STAGE_DEPLOYER_USER` and
 `NEXUS_STAGE_DEPLOYER_PW` deploy to [Nexus](https://repository.apache.org/),
 and `PARQUET_SVN_DEV_USERNAME` and `PARQUET_SVN_DEV_PASSWORD` write to
-`dist/dev/parquet`. The public key for the signing key must be in
-[KEYS](https://downloads.apache.org/parquet/KEYS).
+`dist/dev/parquet`.
+
+The workflows sign releases with the project's automated release signing key,
+which is published in [KEYS](https://downloads.apache.org/parquet/KEYS):
+
+```
+pub   rsa4096 2026-08-31 [SC]
+      DD1E 0FA3 56E5 268B E450  B2AA A528 E51B CE01 BCFE
+uid   Apache Parquet Automated Release Signing <private@parquet.apache.org>
+```
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQINBGqVgVIBEACmlXU8bUDOrpnVXEP05yhSRPa3RoUNBEIkN3HeuzT1S3QYd6X6
+4rioj2qsbjDIa6AFeF+w0HrhjW5njbwDCqtFvJl5r1iM93I992jNWGyZZBCm5G/8
+p2O3OO7oTcjjoTVhMAaQH+Mi1TWGCpNPnTIkv+AmDgr6UTabzPTPs3bvybyZQZ0s
+BnU3cQyEQiS8HcZFLyw5ehuD0CXXV2ELskeRhyaMfuCcK09I7h3Lhu2ULZQQjSjI
+SOsx3uyP3QVAwD3EHOp7Fhe6EvaRJdfBJkEPO1UFv1dAg1ZGLk5Mr/vs9SehSSOk
+t026ZqQ+hGTzdchA0Tmc0CbyCFfNvOZjLluspHOHsR606FYiGkexGurRDYXRtZ0+
+odRydfQ2XPLH+9o5Kcme4GmvxHGtknVcri9IqC+AYf2rQ+pJ3Gz3Nqhzs7mkc6bY
+SP+LCD+qkIFmpyg1zlV8LYLgyuqJqvcnSRgbcGlqTik4bNm8rPe7+s67cjbI2U/9
+NPMfA+4UQ3JbsaBzge7znZ5lorjpzArd+N7LO4HtL3E1jcPSD/2G6KrZObBXIB0q
+00Tw3wi8I1d1a/wD/8XZ4I7X9RStNcWhOXIK9wnAeMUsXB9vvw1bbVIGAc8w4pLk
+I/gKezsdf3uWo3OeSPvYLxnVK/6uGouQ27E/lLJRfEGcpC9ICnIgJkjEowARAQAB
+tEVBcGFjaGUgUGFycXVldCBBdXRvbWF0ZWQgUmVsZWFzZSBTaWduaW5nIDxwcml2
+YXRlQHBhcnF1ZXQuYXBhY2hlLm9yZz6JAlAEEwEIADsWIQTdHg+jVuUmi+RQsqql
+KOUbzgG8/gUCapWBUgIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRCl
+KOUbzgG8/rnLD/jarWEPcmrx/wTM2yMHtcH/aDmoYE8dZFF2doZU94vjRF24ehn4
+ZFQKKNfhjvEJEsu3rFeByLzqYll6NUjYL3Nclhds3YcVhxWk06RV3oBwCnjSIXxI
+l574XwRm6mW7PmUmSbaiM6dWn8wMvDfmxfzI9cXY7Uojcfbw7VZ5X5UU3f1EP7l5
+k8qAf1iZAgOzBt43N4uzOcChvYW9JBHbhKdFQBxvcroM68xFw22s+bsaWHPVyqTT
+XNwlJ3W2wAotO1+h4thAoCMTmDZzKpBtLuonG5V8LimqBpk4KykHRrISD3zMDxkP
+XZ9auK3+f7w4K+hKk+b08ezsDrk99PiETX39KZ6rZzDDrSBhrShD6TuOIfpM09eJ
+s0GtqVifoF9VSnLebEq2DhzF+8Pol6w0O1g9tLjn8b0SVTazfFpvwNosHEnh05rU
+dewFQ2muqnbr/pyrxQVH7RCaOzaNrgAHx6sRilMGbZ/8cHQTp5hiSpwVMrFtjtD8
+76GgHcOjn65NP/aUfTADmGrCvYRtOf+gKtAD15xZeN7NQNNp/2e3y8oJy/fRFpRd
+D6UEuOU5JPWD7Fmoyf/AoBWB66wIIsmINEUxKMfChu6K6vVtlN1jYVrdC9q8FlU2
+OUecvYJObuXscQpJdZLrs098JO62pWz1MpjclYLz0wRkE+UWddWxeQ0I
+=ukWa
+-----END PGP PUBLIC KEY BLOCK-----
+```
 
 ### Release process
 

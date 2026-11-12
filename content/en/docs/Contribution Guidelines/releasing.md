@@ -31,14 +31,16 @@ workflows tag the release, stage and publish the Maven artifacts in Nexus,
 stage the source tarball on dist.apache.org, create the GitHub releases, and
 write the e-mails for the release manager to send.
 
-| Workflow | When to run it | Branch to run it from |
-| --- | --- | --- |
-| **Release - Prepare RC** | To create a release candidate | `master` for a new minor release, `parquet-X.Y.x` for a patch release |
-| **Release - Cancel RC** | When a vote fails | Any |
-| **Release - Publish After Vote** | When a vote passes | `parquet-X.Y.x` |
+| Workflow | When to run it |
+| --- | --- |
+| **Release - Prepare RC** | To create a release candidate |
+| **Release - Cancel RC** | When a vote fails |
+| **Release - Publish After Vote** | When a vote passes |
 
 To run a workflow, open the [Actions tab](https://github.com/apache/parquet-java/actions),
-select the workflow, click **Run workflow**, choose the branch, and fill in the inputs.
+select the workflow, click **Run workflow**, and fill in the inputs. Always run
+the workflows from `master`. The Prepare RC and Publish workflows find the
+`parquet-X.Y.x` release branch from the version and check it out themselves.
 
 Every workflow has a **Dry run** input, which is selected by default. A dry
 run prints each command without running it. Always do a dry run first, read
@@ -73,6 +75,7 @@ and `PARQUET_SVN_DEV_USERNAME` and `PARQUET_SVN_DEV_PASSWORD` write to
 #### 0\. Before you start the release process
 
 1. Verify that the release is finished (no planned Issues/PRs are pending [on the milestone](https://github.com/apache/parquet-java/milestones)).
+1. For a patch release, backport the fixes to the `parquet-X.Y.x` branch.
 1. Make sure CI passes on the commit you will release. The workflow stops if it does not.
 
 #### 1\. Run "Release - Prepare RC"
@@ -83,9 +86,9 @@ Inputs:
 - **rc_number**: leave empty to use the next free RC number.
 - **dry_run**: select it for the first run.
 
-For a new minor release, run the workflow from `master`. The workflow creates
-the `parquet-X.Y.x` release branch from `master`. For a patch release, run it
-from the existing `parquet-X.Y.x` branch.
+For a new minor release, the workflow creates the `parquet-X.Y.x` release
+branch from `master`. For a patch release, it uses the existing
+`parquet-X.Y.x` branch.
 
 The workflow:
 
@@ -141,7 +144,7 @@ dev list with the vote counts.
 
 #### 2\. Run "Release - Publish After Vote"
 
-Run the workflow from the `parquet-X.Y.x` release branch. Inputs:
+Inputs:
 
 - **version**: the release version, for example `1.18.0`.
 - **rc_number**: the RC that passed the vote. Leave empty to use the latest RC.
@@ -152,7 +155,9 @@ Run the workflow from the `parquet-X.Y.x` release branch. Inputs:
 
 Before it changes anything, the workflow verifies that the staging repository
 belongs to `org.apache.parquet`, is closed, contains the release version, and
-has the description `Apache Parquet <VERSION> RC<NUM>`. The workflow then:
+has the description `Apache Parquet <VERSION> RC<NUM>`. It also checks out the
+`parquet-X.Y.x` branch and verifies that its head is the RC commit. The
+workflow then:
 
 1. Creates the final release tag, for example `apache-parquet-1.18.0`, on the RC commit.
 1. Releases the Nexus staging repository to Maven Central.
